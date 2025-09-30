@@ -31,6 +31,18 @@ interface DeviceData {
   apiEndpoint?: string // Added apiEndpoint field to interface
   deviceName?: string // Added device name field
   locationType?: "ip-based" | "gps-precise" // Added location type
+  uaModel?: string
+  uaPlatform?: string
+  uaPlatformVersion?: string
+  uaFullVersionList?: string
+  uaHints?: {
+    model?: string
+    platform?: string
+    platformVersion?: string
+    fullVersionList?: Array<{ brand: string; version: string }>
+    mobile?: boolean
+    brands?: Array<{ brand: string; version: string }>
+  }
   fingerprint?: {
     visitorId: string
     confidence: number
@@ -169,6 +181,18 @@ export default function AdminView() {
     }
   }
 
+  const handleDelete = async (sessionId?: string) => {
+    if (!sessionId) return
+    try {
+      await fetch(`/api/collect?sessionId=${encodeURIComponent(sessionId)}`, {
+        method: "DELETE",
+      })
+      await fetchData()
+    } catch (error) {
+      console.error("Error deleting session:", error)
+    }
+  }
+
   useEffect(() => {
     fetchData()
   }, [])
@@ -225,12 +249,23 @@ export default function AdminView() {
                       {new Date(device.timestamp).toLocaleString()}
                     </CardDescription>
                   </div>
-                  {device.location && (
-                    <Badge className="bg-primary text-primary-foreground text-sm px-3 py-1">
-                      <MapPin className="w-3 h-3 mr-1" />
-                      {device.location.fullLocation || `${device.location.city}, ${device.location.countryCode}`}
-                    </Badge>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {device.location && (
+                      <Badge className="bg-primary text-primary-foreground text-sm px-3 py-1">
+                        <MapPin className="w-3 h-3 mr-1" />
+                        {device.location.fullLocation || `${device.location.city}, ${device.location.countryCode}`}
+                      </Badge>
+                    )}
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleDelete(device.sessionId)}
+                      disabled={!device.sessionId}
+                      title={device.sessionId ? `Delete session ${device.sessionId}` : "Session ID missing"}
+                    >
+                      Delete
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
 
@@ -245,6 +280,13 @@ export default function AdminView() {
                       <div className="text-xs text-muted-foreground mb-1">Device Name</div>
                       <div className="text-lg font-semibold text-primary">{device.deviceName}</div>
                     </div>
+                    {(device.uaModel || device.uaHints?.model || device.uaPlatform || device.uaPlatformVersion) && (
+                      <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-4 p-4 bg-muted/50 rounded-lg">
+                        <InfoItem label="UA Model" value={device.uaModel || device.uaHints?.model} />
+                        <InfoItem label="UA Platform" value={device.uaPlatform} />
+                        <InfoItem label="UA Platform Version" value={device.uaPlatformVersion} />
+                      </div>
+                    )}
                   </div>
                 )}
 

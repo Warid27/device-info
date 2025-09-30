@@ -22,6 +22,7 @@ export default function UserView() {
     const doCollect = async () => {
       try {
         const deviceInfo: any = await collectDeviceInfo(sessionId)
+        console.log("Device info:", deviceInfo)
         await sendData(deviceInfo)
         setCollected(true)
         collectPreciseLocation(sessionId).then((ok) => {

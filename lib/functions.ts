@@ -3,6 +3,7 @@
 import FingerprintJS from "@fingerprintjs/fingerprintjs"
 
 export const parseDeviceName = (userAgent: string): string => {
+  console.log("USER AGENT:", userAgent)
   const iphoneMatch = userAgent.match(/iPhone\s?(\d+[,\d]*|\w+)/i)
   if (iphoneMatch) {
     const model = iphoneMatch[1].replace(/,/g, ".")
@@ -24,9 +25,19 @@ export const parseDeviceName = (userAgent: string): string => {
     return `Xiaomi ${xiaomiMatch[1].trim()}`
   }
 
+  const vivoMatch = userAgent.match(/vivo[\s-]?([\w\s-]+?)(?:Build|\))/i)
+  if (vivoMatch) {
+    return `Vivo ${vivoMatch[1].trim()}`
+  }
+
   const oppoMatch = userAgent.match(/OPPO[\s-]?([\w\s-]+?)(?:Build|\))/i)
   if (oppoMatch) {
     return `Oppo ${oppoMatch[1].trim()}`
+  }
+
+  const realmeMatch = userAgent.match(/realme[\s-]?([\w\s-]+?)(?:Build|\))/i)
+  if (realmeMatch) {
+    return `Realme ${realmeMatch[1].trim()}`
   }
 
   const huaweiMatch = userAgent.match(/Huawei[\s-]?([\w\s-]+?)(?:Build|\))/i)
@@ -54,11 +65,18 @@ export const parseDeviceName = (userAgent: string): string => {
     return `Google Pixel ${pixelMatch[1].trim()}`
   }
 
-  const androidMatch = userAgent.match(/Android.*;\s*([\w\s-]+?)(?:Build|\))/i)
+  // Generic Android device model fallback. Avoid capturing single letters like "K" or locale codes.
+  const androidMatch = userAgent.match(/Android[^;]*;\s*([^;()]+?)(?:\s+Build|\))/i)
   if (androidMatch) {
-    const model = androidMatch[1].trim()
-    if (!model.match(/Android|Linux|Mobile|Tablet/i)) {
-      return model
+    const rawModel = androidMatch[1].trim()
+    const isNoise =
+      /^(Android|Linux|Mobile|Tablet|U|K)$/i.test(rawModel) || // common noise tokens
+      /^[a-z]{2}-[A-Z]{2}$/.test(rawModel) // locale like en-US
+
+    const looksLikeModel = rawModel.length >= 3 && /[A-Za-z]/.test(rawModel)
+
+    if (!isNoise && looksLikeModel) {
+      return rawModel
     }
   }
 
@@ -78,10 +96,15 @@ export const parseDeviceName = (userAgent: string): string => {
 }
 
 export const collectDeviceInfo = async (sessionId: string) => {
-  const fp = await FingerprintJS.load()
-  const result = await fp.get()
-  const anyResult: any = result
-
+  console.log("[collectDeviceInfo] start, navigator.userAgent:", navigator.userAgent)
+  let anyResult: any = {}
+  try {
+    const fp = await FingerprintJS.load()
+    const result = await fp.get()
+    anyResult = result as any
+  } catch (e) {
+    console.warn("[collectDeviceInfo] FingerprintJS unavailable:", e)
+  }
   const deviceInfo: any = {
     sessionId,
     timestamp: new Date().toISOString(),
@@ -153,6 +176,34 @@ export const collectDeviceInfo = async (sessionId: string) => {
     localStorage: typeof localStorage !== "undefined",
     sessionStorage: typeof sessionStorage !== "undefined",
     indexedDB: typeof indexedDB !== "undefined",
+  }
+
+  // Try User-Agent Client Hints for accurate model on Chromium browsers
+  try {
+    const uaData: any = (navigator as any).userAgentData
+    if (uaData?.getHighEntropyValues) {
+      const high = await uaData.getHighEntropyValues([
+        "model",
+        "platform",
+        "platformVersion",
+        "fullVersionList",
+      ])
+      if (high) {
+        ;(deviceInfo as any).uaHints = {
+          model: high.model,
+          platform: high.platform,
+          platformVersion: high.platformVersion,
+          fullVersionList: high.fullVersionList,
+          mobile: uaData.mobile,
+          brands: uaData.brands,
+        }
+        if (high.model && typeof high.model === "string" && high.model.trim().length > 0) {
+          deviceInfo.deviceName = high.model
+        }
+      }
+    }
+  } catch (e) {
+    // ignore
   }
 
   const connection =
