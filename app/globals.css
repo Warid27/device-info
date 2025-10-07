@@ -1,6 +1,18 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* 1. Tell Tailwind that our sans font uses this stack */
+@theme {
+  --font-sans: "Google Sans", var(--font-roboto), "Noto Sans Myanmar UI", Arial,
+    sans-serif;
+}
+
+/* 2. Override Tailwind’s default variable */
+:root {
+  --default-font-family: "Google Sans", var(--font-roboto),
+    "Noto Sans Myanmar UI", Arial, sans-serif;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 /* Thin scrollbar (YouTube-like) */
@@ -14,7 +26,6 @@
 .thin-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
-
 
 :root {
   --background: oklch(1 0 0);
@@ -88,7 +99,9 @@
 }
 
 @theme inline {
-  /* optional: --font-sans, --font-serif, --font-mono if they are applied in the layout.tsx */
+  --font-sans: "Google Sans", var(--font-roboto), "Noto Sans Myanmar UI", Arial,
+    sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);

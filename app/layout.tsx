@@ -1,7 +1,14 @@
 import type { Metadata } from 'next'
-import { GeistSans } from 'geist/font/sans'
-import { GeistMono } from 'geist/font/mono'
+import { Roboto } from 'next/font/google'
 import './globals.css'
+
+const roboto = Roboto({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'], // optional, customize as needed
+  variable: '--font-roboto',
+  display: 'swap',
+})
+
 
 export const metadata: Metadata = {
   title: 'Youtube',
@@ -28,7 +35,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
+      <body className={`${roboto.variable} font-sans`}>
         {children}
       </body>
     </html>

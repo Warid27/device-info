@@ -21,7 +21,7 @@ export const GoogleButton = ({
     <button
       {...props}
       className={clsx(
-        "py-2.5 lg:py-3 rounded-full font-medium text-sm lg:text-base transition-all duration-200 outline-none focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed",
+        "cursor-pointer py-2.5 lg:py-3 rounded-full font-medium text-sm lg:text-base transition-all duration-200 outline-none focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed",
         {
           [isDark
             ? "px-6 bg-[#8ab4f8] text-[#202124] hover:brightness-110 focus:brightness-110 active:brightness-125"

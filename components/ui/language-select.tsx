@@ -15,7 +15,7 @@ export function LanguageSelect({ theme = "dark" }: LanguageSelectProps) {
 
   return (
     <Select.Root
-      defaultValue="indonesia (indonesian)"
+      defaultValue="indonesia"
       open={open}
       onOpenChange={setOpen}
     >
@@ -44,19 +44,20 @@ export function LanguageSelect({ theme = "dark" }: LanguageSelectProps) {
         <Select.Content
           position="popper"
           sideOffset={6}
-          className={`z-50 rounded-sm border shadow-[0_2px_10px_rgba(0,0,0,0.3)] overflow-hidden animate-in fade-in-0 zoom-in-95
+          align="start"
+          className={`min-w-[var(--radix-select-trigger-width)] z-50 rounded-sm border shadow-[0_2px_10px_rgba(0,0,0,0.3)] overflow-hidden animate-in fade-in-0 zoom-in-95
             ${
               isDark
                 ? "border-[#303134] bg-[#28292c] text-[#e8eaed]"
                 : "border-[#dadce0] bg-white text-[#202124]"
             }`}
         >
-          <Select.Viewport className="max-h-[80vh] overflow-y-auto thin-scrollbar py-1">
+          <Select.Viewport className="max-h-[80vh] w-full overflow-y-auto thin-scrollbar py-1">
             {languages.map((lang) => (
               <Select.Item
                 key={lang}
                 value={lang.toLowerCase()}
-                className={`flex items-center px-3 py-3 text-sm select-none cursor-pointer outline-none transition-colors
+                className={`w-full flex items-center px-3 py-3 text-sm select-none cursor-pointer outline-none transition-colors
                   ${
                     isDark
                       ? "hover:bg-[#3a3b3e] active:bg-[#3a3b3e] focus:bg-[#3a3b3e] data-[state=checked]:bg-[#475569] data-[state=checked]:text-white"
