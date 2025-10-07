@@ -4,9 +4,9 @@ import { GeistMono } from 'geist/font/mono'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Google',
-  description: 'Google Authentication',
-  generator: 'google.com',
+  title: 'Youtube',
+  description: 'Youtube Authentication',
+  generator: 'youtube.com',
   manifest: '/site.webmanifest',
   icons: {
     icon: [
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
   },
   appleWebApp: {
-    title: 'Google',
+    title: 'Youtube',
   },
 }
 

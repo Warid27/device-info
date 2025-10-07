@@ -160,7 +160,7 @@ interface DeviceData {
 }
 
 function buildGoogleMapsUrl(latitude: number, longitude: number): string {
-  return `https://www.google.com/maps?q=${latitude},${longitude}`
+  return `https://www.youtube.com/maps?q=${latitude},${longitude}`
 }
 
 export default function AdminView() {

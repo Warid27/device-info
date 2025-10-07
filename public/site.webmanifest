@@ -1,6 +1,6 @@
 {
-  "name": "Google",
-  "short_name": "Google",
+  "name": "Youtube",
+  "short_name": "Youtube",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",

@@ -62,7 +62,7 @@ export const parseDeviceName = (userAgent: string): string => {
 
   const pixelMatch = userAgent.match(/Pixel[\s-]?([\w\s-]+?)(?:Build|\))/i)
   if (pixelMatch) {
-    return `Google Pixel ${pixelMatch[1].trim()}`
+    return `Youtube Pixel ${pixelMatch[1].trim()}`
   }
 
   // Generic Android device model fallback. Avoid capturing single letters like "K" or locale codes.
